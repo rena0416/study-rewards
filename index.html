@@ -3,68 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>家中小管家 V2 - 具備兌換功能</title>
+    <title>Kakao Reward System V3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        .btn-plus { @apply bg-emerald-500 active:bg-emerald-700 text-white p-3 rounded-lg shadow-sm text-sm font-medium; }
-        .btn-minus { @apply bg-rose-500 active:bg-rose-700 text-white p-3 rounded-lg shadow-sm text-sm font-medium; }
-        .btn-exchange { @apply bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md; }
-        .card { @apply bg-white p-4 rounded-2xl shadow-sm mb-4 border border-gray-100; }
-        /* 讓捲軸美化 */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #FEE500; }
+        .ryan-card { @apply bg-white rounded-[30px] shadow-sm mb-4 border-none; }
+        .btn-plus { @apply bg-[#E8F5E9] text-[#2E7D32] border-2 border-[#A5D6A7] rounded-2xl p-3 text-center active:scale-90 transition-all; }
+        .btn-minus { @apply bg-[#FFEBEE] text-[#C62828] border-2 border-[#FFCDD2] rounded-2xl p-3 text-center active:scale-90 transition-all; }
+        .btn-exchange { @apply bg-[#FFB6C1] text-white px-4 py-1 rounded-full text-sm font-bold shadow-sm active:bg-[#FF91A4] active:scale-95; }
+        .tab-active { @apply bg-[#3C1E1E] text-white shadow-lg scale-105; }
+        .tab-inactive { @apply bg-[#F7E600] text-[#3C1E1E] opacity-70; }
         #history-list::-webkit-scrollbar { width: 4px; }
-        #history-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        #history-list::-webkit-scrollbar-thumb { background: #FFD1D1; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body class="p-4 pb-10">
 
-<div id="app" class="max-w-md mx-auto min-h-screen p-4 pb-20">
-    <header class="text-center my-6">
-        <h1 class="text-2xl font-black text-slate-700 tracking-tight">🏆 榮譽點數管理系統</h1>
+<div id="app" class="max-w-md mx-auto">
+    <audio id="snd-plus" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
+    <audio id="snd-minus" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
+    <audio id="snd-exchange" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+
+    <header class="flex items-center justify-center gap-2 my-6">
+        <span class="text-3xl">🦁</span>
+        <h1 class="text-2xl font-black text-[#3C1E1E]">好孩子獎勵榜</h1>
+        <span class="text-3xl">🍑</span>
     </header>
 
-    <div class="flex p-1 bg-slate-200 rounded-xl mb-6">
-        <button onclick="switchChild('wei')" id="tab-wei" class="flex-1 py-2 rounded-lg transition-all duration-300 font-bold">瑋瑋</button>
-        <button onclick="switchChild('hao')" id="tab-hao" class="flex-1 py-2 rounded-lg transition-all duration-300 font-bold">豪豪</button>
+    <div class="flex gap-2 mb-6 justify-center">
+        <button onclick="switchChild('wei')" id="tab-wei" class="px-8 py-2 rounded-full font-black transition-all">瑋瑋</button>
+        <button onclick="switchChild('hao')" id="tab-hao" class="px-8 py-2 rounded-full font-black transition-all">豪豪</button>
     </div>
 
-    <div class="card bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-none shadow-indigo-200">
-        <div class="flex justify-between items-center text-blue-100 text-sm mb-1">
-            <span id="child-name-label">當前餘額</span>
-            <span class="opacity-80">自動儲存中</span>
+    <div class="ryan-card p-6 text-center border-b-8 border-gray-100">
+        <p class="text-[#3C1E1E] opacity-60 text-sm font-bold mb-1" id="child-label">當前分數</p>
+        <div class="text-6xl font-black text-[#3C1E1E] tracking-tight" id="total-score">0</div>
+        <div class="mt-2 inline-block px-3 py-1 bg-[#FEE500] rounded-full text-[10px] font-bold text-[#3C1E1E]">🔊 已開啟音效回饋</div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="ryan-card p-3 text-center">
+            <h3 class="font-black text-xs text-[#2E7D32] mb-3">✨ 加分</h3>
+            <div id="plus-grid" class="flex flex-col gap-2"></div>
         </div>
-        <div class="text-5xl font-black tracking-tighter" id="total-score">0</div>
+        <div class="ryan-card p-3 text-center">
+            <h3 class="font-black text-xs text-[#C62828] mb-3">⚠️ 扣分</h3>
+            <div id="minus-grid" class="flex flex-col gap-2"></div>
+        </div>
     </div>
 
-    <div class="card">
-        <h3 class="font-bold text-slate-500 text-xs mb-3 uppercase tracking-widest">行為登記</h3>
-        <div id="action-grid" class="grid grid-cols-2 gap-3">
-            </div>
+    <div class="ryan-card p-5">
+        <h3 class="font-black text-[#3C1E1E] text-sm mb-4">🎁 禮物兌換</h3>
+        <div id="reward-stack" class="space-y-3"></div>
     </div>
 
-    <div class="card">
-        <h3 class="font-bold text-slate-500 text-xs mb-3 uppercase tracking-widest">獎勵兌換 (點擊兌換將扣分)</h3>
-        <div id="reward-stack" class="space-y-3">
-            </div>
+    <div class="ryan-card p-5 bg-[#FFFAF0]">
+        <h3 class="font-black text-gray-400 text-xs mb-3 uppercase tracking-widest">最近登記紀錄</h3>
+        <div id="history-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
     </div>
-
-    <div class="card">
-        <h3 class="font-bold text-slate-500 text-xs mb-3 uppercase tracking-widest">最近紀錄</h3>
-        <div id="history-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
-            </div>
-    </div>
-
-    <button onclick="clearHistory()" class="w-full py-4 text-slate-400 text-xs hover:text-rose-500 transition-colors">清除所有歷史紀錄</button>
 </div>
 
 <script>
-// 1. 基本設定 (依照圖片資訊)
 const config = {
     wei: {
         name: "瑋瑋",
         init: 16900,
         actions: [
-            { t: "準時收平板", v: 500 }, { t: "小考 > 80", v: 300 },
+            { t: "表現良好", v: 100 }, { t: "準時收平板", v: 500 }, { t: "小考 > 80", v: 300 },
             { t: "期中末考 > 80", v: 1000 }, { t: "期中末考 70-79", v: 500 },
             { t: "未準時收平板", v: -300 }, { t: "叫了沒馬上做", v: -100 },
             { t: "家事沒做", v: -500 }, { t: "無聊講弟弟", v: -500 },
@@ -78,7 +84,7 @@ const config = {
         name: "豪豪",
         init: 2150,
         actions: [
-            { t: "假日不讓媽生氣", v: 500 }, { t: "平日不讓媽生氣", v: 250 },
+            { t: "表現良好", v: 100 }, { t: "假日不讓媽生氣", v: 500 }, { t: "平日不讓媽生氣", v: 250 },
             { t: "按摩10分鐘", v: 100 }, { t: "小考 > 85", v: 300 },
             { t: "期中末考 > 85", v: 1000 }, { t: "讓媽咪生氣", v: -100 },
             { t: "跟哥哥吵架", v: -500 }, { t: "無聊講哥哥", v: -500 },
@@ -94,117 +100,99 @@ const config = {
 };
 
 let currentID = 'wei';
-// 從 LocalStorage 讀取資料，如果沒有就用初始值
-let state = JSON.parse(localStorage.getItem('study_reward_v2')) || {
+let state = JSON.parse(localStorage.getItem('kakao_reward_v3')) || {
     wei: { score: config.wei.init, logs: [] },
     hao: { score: config.hao.init, logs: [] }
 };
 
-// 切換小孩
+function playSound(type) {
+    const audio = document.getElementById('snd-' + type);
+    audio.currentTime = 0;
+    audio.play();
+}
+
 function switchChild(id) {
     currentID = id;
-    const isWei = id === 'wei';
-    document.getElementById('tab-wei').className = `flex-1 py-2 rounded-lg font-bold ${isWei ? 'bg-white shadow text-blue-600' : 'text-slate-500'}`;
-    document.getElementById('tab-hao').className = `flex-1 py-2 rounded-lg font-bold ${!isWei ? 'bg-white shadow text-blue-600' : 'text-slate-500'}`;
+    document.getElementById('tab-wei').className = id === 'wei' ? 'px-8 py-2 rounded-full font-black tab-active' : 'px-8 py-2 rounded-full font-black tab-inactive';
+    document.getElementById('tab-hao').className = id === 'hao' ? 'px-8 py-2 rounded-full font-black tab-active' : 'px-8 py-2 rounded-full font-black tab-inactive';
     render();
 }
 
-// 執行加減分
 function addPoint(title, value) {
     state[currentID].score += value;
-    addLog(currentID, `【登記】${title}`, value);
-    saveAndRefresh();
+    playSound(value > 0 ? 'plus' : 'minus');
+    addLog(currentID, title, value);
+    save();
 }
 
-// 執行兌換 (自動扣分)
 function exchange(title, cost) {
-    if (state[currentID].score < cost) {
-        alert("分數還不夠喔，繼續加油！");
-        return;
-    }
-    if (confirm(`確定要兌換「${title}」並扣除 ${cost} 分嗎？`)) {
+    if (state[currentID].score < cost) return;
+    if (confirm(`🦁 確認要兌換「${title}」嗎？`)) {
         state[currentID].score -= cost;
-        addLog(currentID, `🎁 兌換了：${title}`, -cost);
-        saveAndRefresh();
+        playSound('exchange');
+        addLog(currentID, `🎁 兌換：${title}`, -cost);
+        save();
     }
 }
 
-// 紀錄日誌
 function addLog(id, msg, val) {
     const now = new Date();
     const timeStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
     state[id].logs.unshift({ time: timeStr, msg: msg, val: val });
-    // 最多保留 100 筆紀錄
-    if (state[id].logs.length > 100) state[id].logs.pop();
+    if (state[id].logs.length > 50) state[id].logs.pop();
 }
 
-// 儲存並刷新畫面
-function saveAndRefresh() {
-    localStorage.setItem('study_reward_v2', JSON.stringify(state));
+function save() {
+    localStorage.setItem('kakao_reward_v3', JSON.stringify(state));
     render();
 }
 
 function render() {
     const data = state[currentID];
     const conf = config[currentID];
-    
-    // 1. 分數
     document.getElementById('total-score').innerText = data.score.toLocaleString();
-    document.getElementById('child-name-label').innerText = conf.name + " 的當前餘額";
+    document.getElementById('child-label').innerText = conf.name + " 的當前分數";
 
-    // 2. 加減分按鈕
-    const grid = document.getElementById('action-grid');
-    grid.innerHTML = conf.actions.map(a => `
-        <button onclick="addPoint('${a.t}', ${a.v})" class="${a.v > 0 ? 'btn-plus' : 'btn-minus'}">
-            <div class="opacity-80 text-[10px] mb-1 font-normal">${a.v > 0 ? '加分' : '扣分'}</div>
-            ${a.t}
-            <div class="mt-1 text-lg font-black">${a.v > 0 ? '+' : ''}${a.v}</div>
+    const plusGrid = document.getElementById('plus-grid');
+    plusGrid.innerHTML = conf.actions.filter(a => a.v > 0).map(a => `
+        <button onclick="addPoint('${a.t}', ${a.v})" class="btn-plus">
+            <div class="text-[10px] font-bold">${a.t}</div>
+            <div class="text-sm font-black">+${a.v}</div>
         </button>
     `).join('');
 
-    // 3. 獎勵兌換
+    const minusGrid = document.getElementById('minus-grid');
+    minusGrid.innerHTML = conf.actions.filter(a => a.v < 0).map(a => `
+        <button onclick="addPoint('${a.t}', ${a.v})" class="btn-minus">
+            <div class="text-[10px] font-bold">${a.t}</div>
+            <div class="text-sm font-black">${a.v}</div>
+        </button>
+    `).join('');
+
     const stack = document.getElementById('reward-stack');
     stack.innerHTML = conf.rewards.map(r => {
         const canBuy = data.score >= r.v;
         return `
-            <div class="flex justify-between items-center p-3 rounded-xl border ${canBuy ? 'bg-amber-50 border-amber-200' : 'bg-gray-50 border-gray-100 opacity-60'}">
+            <div class="flex justify-between items-center p-3 rounded-2xl bg-gray-50 border ${canBuy ? 'border-[#FFB6C1] bg-[#FFF5F7]' : 'border-gray-100 opacity-50'}">
                 <div>
-                    <div class="text-sm font-bold ${canBuy ? 'text-amber-800' : 'text-gray-500'}">${r.t}</div>
-                    <div class="text-[10px] text-gray-400">需 ${r.v.toLocaleString()} 分</div>
+                    <div class="text-xs font-black ${canBuy ? 'text-[#3C1E1E]' : 'text-gray-400'}">${r.t}</div>
+                    <div class="text-[10px] text-gray-400 italic">${r.v.toLocaleString()} pt</div>
                 </div>
-                ${canBuy ? `<button onclick="exchange('${r.t}', ${r.v})" class="btn-exchange">兌換</button>` : `<span class="text-[10px] text-gray-400">尚差 ${r.v - data.score}</span>`}
+                ${canBuy ? `<button onclick="exchange('${r.t}', ${r.v})" class="btn-exchange">兌換</button>` : `<div class="text-[9px] text-gray-300">差 ${r.v - data.score}</div>`}
             </div>
         `;
     }).join('');
 
-    // 4. 歷史紀錄
     const list = document.getElementById('history-list');
-    if (data.logs.length === 0) {
-        list.innerHTML = `<div class="text-center py-4 text-slate-300 text-sm italic">尚無歷史紀錄</div>`;
-    } else {
-        list.innerHTML = data.logs.map(l => `
-            <div class="flex justify-between items-center text-xs py-2 border-b border-slate-50">
-                <div class="flex flex-col">
-                    <span class="text-slate-400 scale-90 origin-left">${l.time}</span>
-                    <span class="font-medium text-slate-600">${l.msg}</span>
-                </div>
-                <div class="font-bold ${l.val > 0 ? 'text-emerald-500' : 'text-rose-500'}">
-                    ${l.val > 0 ? '+' : ''}${l.val}
-                </div>
+    list.innerHTML = data.logs.length === 0 ? `<div class="text-center py-4 text-gray-300 text-[10px]">尚未有紀錄</div>` : 
+        data.logs.map(l => `
+            <div class="flex justify-between items-center text-[10px] py-2 border-b border-gray-50">
+                <span class="text-gray-400 font-mono scale-90">${l.time}</span>
+                <span class="font-bold text-gray-600">${l.msg}</span>
+                <span class="font-black ${l.val > 0 ? 'text-green-500' : 'text-red-400'}">${l.val > 0 ? '+' : ''}${l.val}</span>
             </div>
         `).join('');
-    }
 }
-
-function clearHistory() {
-    if(confirm("確定要清除所有歷史紀錄嗎？（分數會保留）")) {
-        state.wei.logs = [];
-        state.hao.logs = [];
-        saveAndRefresh();
-    }
-}
-
-// 初始化
 switchChild('wei');
 </script>
 </body>

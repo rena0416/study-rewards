@@ -33,14 +33,14 @@
             width: 90px;
         }
         
-        /* 頭像樣式：帶有角色底色與圖片 */
+        /* 頭像樣式：直接改為純色塊 */
         .avatar {
             width: 80px; height: 80px; border-radius: 50%; border: 4px solid white;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 8px;
-            background-size: cover; background-position: center; background-repeat: no-repeat;
+            transition: all 0.3s;
         }
-        .ryan-img { background-color: #6DB3FC; background-image: url('https://i.imgur.com/8N4N3u8.png'); }
-        .apeach-img { background-color: #FFB6C1; background-image: url('https://i.imgur.com/uI6O4G8.png'); }
+        .ryan-color { background-color: #6DB3FC; }
+        .apeach-color { background-color: #FFB6C1; }
 
         .tab-active { transform: translateY(-10px) scale(1.1); opacity: 1; }
         .tab-active span { font-weight: 900; color: #3C1E1E; font-size: 1rem; }
@@ -51,14 +51,14 @@
             background: linear-gradient(135deg, #FEE500 0%, #FFD200 100%);
             border-radius: 50px; border: 6px solid white;
             box-shadow: 0 12px 24px rgba(254, 229, 0, 0.3);
-            width: 88%; margin: 0 auto 55px auto; /* 寬度縮小且置中，下方留白 55px */
+            width: 88%; margin: 0 auto 55px auto; 
             padding: 30px 20px; text-align: center;
         }
 
         /* 加減分行為按鈕 */
         .btn-action { @apply text-base font-black active:scale-95 transition-all py-2 cursor-pointer text-center; }
 
-        /* 獎勵兌換卡片 (還原樣式) */
+        /* 獎勵兌換卡片 (保持原樣) */
         .reward-item {
             background-color: #FFF9F2; border: 2px solid #FEEBC8; border-radius: 30px;
             padding: 16px 20px; margin-bottom: 12px;
@@ -73,7 +73,7 @@
         .btn-exchange:active { transform: translateY(2px); box-shadow: 0 2px 0 #C05621; }
         .btn-locked { background-color: #CBD5E0; box-shadow: 0 4px 0 #A0AEC0; cursor: not-allowed; opacity: 0.7; }
 
-        /* 初始載入動畫，避免白屏感 */
+        /* 初始載入動畫 */
         #app { opacity: 0; transition: opacity 0.5s ease; }
         .loaded #app { opacity: 1; }
     </style>
@@ -86,23 +86,23 @@
     <audio id="snd-minus" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3" preload="auto"></audio>
     <audio id="snd-exchange" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3" preload="auto"></audio>
 
-    <!-- 頂部頭像切換區 -->
+    <!-- 頂部切換區 -->
     <div class="tab-container">
         <div onclick="switchChild('wei')" id="tab-wei" class="tab-btn">
-            <div class="avatar ryan-img"></div>
+            <div class="avatar ryan-color"></div>
             <span>瑋瑋</span>
         </div>
         <div onclick="switchChild('hao')" id="tab-hao" class="tab-btn">
-            <div class="avatar apeach-img"></div>
+            <div class="avatar apeach-color"></div>
             <span>豪豪</span>
         </div>
     </div>
 
-    <!-- 累積分數看板 (內容全置中) -->
+    <!-- 累積分數看板 -->
     <div class="boss-board">
         <div class="text-[#3C1E1E] opacity-50 text-xs font-black tracking-widest mb-1" id="score-title">瑋瑋 的累積分數</div>
         <div class="text-6xl font-black tracking-tighter" id="total-score">0</div>
-        <div class="flex justify-center mt-4">
+        <div class="flex justify-center mt-4 text-center">
             <div class="bg-white/40 px-5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
                 Level Up Progress
             </div>
@@ -167,7 +167,6 @@ const config = {
 };
 
 let currentID = 'wei';
-// 存儲鍵名更新以避免舊數據干擾
 let state = JSON.parse(localStorage.getItem('kakao_v12_final_v2')) || {
     wei: { score: config.wei.init, logs: [] },
     hao: { score: config.hao.init, logs: [] }
@@ -258,7 +257,6 @@ function render() {
     `).join('');
 }
 
-// 確保網頁載入後才啟動
 window.onload = function() {
     document.body.classList.add('loaded');
     switchChild('wei');

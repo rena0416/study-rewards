@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kakao Rewards Final</title>
+    <title>Kakao Rewards V9</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap');
@@ -21,7 +21,7 @@
             background-size: cover; background-position: center;
         }
 
-        /* 正確的萊恩與屁桃頭像 */
+        /* 改用正確的角色頭像連結 */
         .ryan-img { background-image: url('https://i.imgur.com/8N4N3u8.png'); background-color: #6DB3FC; }
         .apeach-img { background-image: url('https://i.imgur.com/uI6O4G8.png'); background-color: #FFB6C1; }
 
@@ -29,40 +29,30 @@
         .tab-active span { font-weight: 900; color: #3C1E1E; }
         .tab-inactive { opacity: 0.4; filter: grayscale(0.2); }
 
-        /* 圓潤積分看板 */
+        /* 縮小後的黃色積分看板：改為置中並增加距離 */
         .boss-board {
             background: linear-gradient(135deg, #FEE500 0%, #FFD200 100%);
-            border-radius: 50px; border: 6px solid white;
-            box-shadow: 0 10px 20px rgba(254, 229, 0, 0.3);
-            @apply py-10 px-6 text-center mx-2 mb-12; /* 增加 mb-12 拉開下方距離 */
+            border-radius: 40px; border: 5px solid white;
+            box-shadow: 0 10px 20px rgba(254, 229, 0, 0.25);
+            width: 92%; margin: 0 auto 50px auto; /* 寬度縮小，置中排列，下方留白增加 */
+            @apply py-8 px-6 text-center; 
         }
 
-        /* 獎勵兌換卡片樣式 (還原圖二) */
+        /* 獎勵兌換卡片樣式 (保持原本樣式) */
         .reward-item {
-            background-color: #FFF9F2;
-            border: 2px solid #FEEBC8;
-            border-radius: 30px;
-            padding: 16px 20px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            background-color: #FFF9F2; border: 2px solid #FEEBC8; border-radius: 30px;
+            padding: 16px 20px; margin-bottom: 12px;
+            display: flex; justify-content: space-between; align-items: center;
         }
         .btn-exchange {
-            background-color: #ED8936;
-            color: white;
-            padding: 8px 24px;
-            border-radius: 20px;
-            font-weight: 900;
-            font-size: 14px;
-            box-shadow: 0 4px 0 #C05621;
-            transition: all 0.1s;
+            background-color: #ED8936; color: white; padding: 8px 24px;
+            border-radius: 20px; font-weight: 900; font-size: 14px;
+            box-shadow: 0 4px 0 #C05621; transition: all 0.1s;
         }
         .btn-exchange:active { transform: translateY(2px); box-shadow: 0 2px 0 #C05621; }
         .btn-locked { background-color: #CBD5E0; box-shadow: 0 4px 0 #A0AEC0; cursor: not-allowed; }
 
-        .btn-action { @apply text-base font-black active:scale-95 transition-all py-2; }
+        .btn-action { @apply text-base font-black active:scale-95 transition-all py-2; cursor: pointer; }
     </style>
 </head>
 <body class="p-4 pb-20">
@@ -84,10 +74,12 @@
     </div>
 
     <div class="boss-board">
-        <div class="text-[#3C1E1E] opacity-50 text-xs font-black tracking-widest mb-1" id="score-title">累積分數</div>
-        <div class="text-6xl font-black tracking-tighter" id="total-score">0</div>
-        <div class="mt-4 inline-block bg-white/40 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
-            Level Up Progress
+        <div class="text-[#3C1E1E] opacity-50 text-xs font-black tracking-widest mb-1 text-center" id="score-title">累積分數</div>
+        <div class="text-6xl font-black tracking-tighter text-center" id="total-score">0</div>
+        <div class="flex justify-center mt-4">
+            <div class="bg-white/40 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+                Level Up Progress
+            </div>
         </div>
     </div>
 
@@ -111,7 +103,7 @@
 
     <div class="bg-gray-100/80 rounded-[30px] p-5">
         <h3 class="text-[10px] font-black text-gray-400 mb-3 uppercase tracking-tighter">History Log</h3>
-        <div id="history-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
+        <div id="history-list" class="space-y-2 max-h-40 overflow-y-auto text-xs"></div>
     </div>
 </div>
 
@@ -146,7 +138,7 @@ const config = {
 };
 
 let currentID = 'wei';
-let state = JSON.parse(localStorage.getItem('kakao_v8_final')) || {
+let state = JSON.parse(localStorage.getItem('kakao_v9_final')) || {
     wei: { score: config.wei.init, logs: [] },
     hao: { score: config.hao.init, logs: [] }
 };
@@ -173,7 +165,7 @@ function addPoint(title, value) {
 
 function exchange(title, cost) {
     if (state[currentID].score < cost) return;
-    if (confirm(`確認要兌換「${title}」嗎？`)) {
+    if (confirm(`🦁 確認要兌換「${title}」嗎？`)) {
         state[currentID].score -= cost;
         playSound('exchange');
         addLog(`🎁 兌換:${title}`, -cost);
@@ -189,7 +181,7 @@ function addLog(msg, val) {
 }
 
 function save() {
-    localStorage.setItem('kakao_v8_final', JSON.stringify(state));
+    localStorage.setItem('kakao_v9_final', JSON.stringify(state));
     render();
 }
 
@@ -218,7 +210,7 @@ function render() {
         return `
             <div class="reward-item">
                 <div class="flex flex-col">
-                    <span class="font-black text-sm">${r.t}</span>
+                    <span class="font-black text-sm text-[#3C1E1E]">${r.t}</span>
                     <span class="text-[10px] font-bold text-gray-400">${r.v.toLocaleString()} pt</span>
                 </div>
                 <button onclick="exchange('${r.t}', ${r.v})" class="btn-exchange ${canBuy ? '' : 'btn-locked'}">
@@ -230,7 +222,7 @@ function render() {
 
     document.getElementById('history-list').innerHTML = data.logs.map(l => `
         <div class="flex justify-between items-center py-2 border-b border-gray-200/50">
-            <span class="text-[10px] text-gray-400 font-mono">${l.time}</span>
+            <span class="text-[10px] text-gray-300 font-mono">${l.time}</span>
             <span class="text-[11px] font-bold text-gray-600">${l.msg}</span>
             <span class="text-[11px] font-black ${l.val > 0 ? 'text-green-500' : 'text-red-400'}">${l.val > 0 ? '+' : ''}${l.val}</span>
         </div>

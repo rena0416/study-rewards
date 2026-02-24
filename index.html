@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kakao Kids Rewards</title>
+    <title>Kakao Kids Rewards V6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap');
@@ -11,48 +11,66 @@
         :root {
             --ryan-blue: #6DB3FC;
             --apeach-pink: #FFB6C1;
-            --kakao-brown: #3C1E1E;
             --kakao-yellow: #FEE500;
         }
 
-        body { 
-            font-family: 'Noto Sans TC', sans-serif; 
-            background-color: #F0F2F5; 
-            color: var(--kakao-brown);
-        }
-        
-        /* 角色切換按鈕置中且放大 */
-        .tab-container { @apply flex justify-center gap-8 mb-8 mt-4; }
-        .tab-btn { 
-            @apply flex flex-col items-center justify-center transition-all duration-300;
-            width: 100px;
-        }
-        .avatar-circle {
-            @apply w-20 h-20 rounded-full flex items-center justify-center text-4xl shadow-md border-4 border-white mb-2 transition-all;
-        }
-        .tab-active { transform: translateY(-10px) scale(1.1); }
-        .tab-active .avatar-circle { @apply shadow-xl; }
-        .tab-active span { @apply font-black text-lg opacity-100; }
-        .tab-inactive { @apply opacity-40 grayscale-[0.5] scale-90; }
-        .tab-inactive span { @apply font-bold text-sm opacity-60; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F8F9FA; }
 
-        /* 極致圓潤的分數看板 */
-        .score-display {
-            background: linear-gradient(145deg, #FEE500 0%, #FFD200 100%);
-            @apply py-10 px-6 text-center rounded-[50px] mb-8 shadow-lg relative mx-2;
+        /* 置中角色切換器 */
+        .tab-container { 
+            display: flex;
+            justify-content: center;
+            gap: 40px; /* 拉開兩者距離 */
+            margin: 20px 0 30px 0;
+            width: 100%;
+        }
+
+        .tab-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 110px;
+        }
+
+        /* 繪製萊恩與屁桃頭像 (取代 Emoji) */
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
+            margin-bottom: 8px;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* 萊恩背景與頭像 */
+        .ryan-bg { background-color: var(--ryan-blue); background-image: url('https://i.imgur.com/8N4N3u8.png'); }
+        /* 屁桃背景與頭像 */
+        .apeach-bg { background-color: var(--apeach-pink); background-image: url('https://i.imgur.com/uI6O4G8.png'); }
+
+        .tab-active { transform: translateY(-12px) scale(1.15); opacity: 1; z-index: 10; }
+        .tab-active span { font-weight: 900; color: #3c1e1e; font-size: 1.1rem; }
+        .tab-inactive { opacity: 0.4; filter: grayscale(0.2); }
+
+        /* 極圓潤分數看板 */
+        .boss-board {
+            background: linear-gradient(135deg, #FEE500 0%, #FFD200 100%);
+            border-radius: 60px; /* 超圓潤 */
             border: 6px solid white;
+            box-shadow: 0 10px 25px rgba(254, 229, 0, 0.3);
+            @apply py-10 px-6 text-center mx-2 mb-8;
         }
 
-        /* 按鈕樣式 */
-        .glass-card { @apply bg-white rounded-[35px] shadow-sm mb-6 border border-gray-100 overflow-hidden; }
-        .btn-plus { 
-            @apply bg-[#F0FFF4] border-2 border-green-200 text-green-700 rounded-2xl p-4 shadow-sm active:scale-90 transition-all flex flex-col items-center;
-        }
-        .btn-minus { 
-            @apply bg-[#FFF5F5] border-2 border-red-100 text-red-500 rounded-2xl p-4 shadow-sm active:scale-90 transition-all flex flex-col items-center;
-        }
+        .btn-plus { @apply bg-[#EBFBEE] border-2 border-[#C2F0C9] text-[#2E7D32] rounded-[20px] p-4 active:scale-90 transition-all flex flex-col items-center shadow-sm font-bold; }
+        .btn-minus { @apply bg-[#FFF5F5] border-2 border-[#FED7D7] text-[#C53030] rounded-[20px] p-4 active:scale-90 transition-all flex flex-col items-center shadow-sm font-bold; }
         
-        .section-header { @apply flex items-center justify-center gap-2 mb-4 font-black text-sm; }
+        .reward-card { @apply bg-white rounded-[30px] p-4 border-b-4 border-orange-100 mb-3 flex justify-between items-center shadow-sm transition-all; }
+        .can-redeem { @apply border-orange-300 bg-orange-50; }
     </style>
 </head>
 <body class="p-4 pb-20">
@@ -64,52 +82,50 @@
 
     <div class="tab-container">
         <div onclick="switchChild('wei')" id="tab-wei" class="tab-btn">
-            <div class="avatar-circle bg-[#6DB3FC]">🦁</div>
-            <span class="text-[#3C1E1E]">瑋瑋</span>
+            <div class="avatar ryan-bg"></div>
+            <span>瑋瑋</span>
         </div>
         <div onclick="switchChild('hao')" id="tab-hao" class="tab-btn">
-            <div class="avatar-circle bg-[#FFB6C1]">🍑</div>
-            <span class="text-[#3C1E1E]">豪豪</span>
+            <div class="avatar apeach-bg"></div>
+            <span>豪豪</span>
         </div>
     </div>
 
-    <div class="score-display">
-        <div class="text-[#3C1E1E] opacity-50 text-xs font-black tracking-widest mb-2" id="child-label">WEI'S TOTAL SCORE</div>
-        <div class="text-6xl font-black tracking-tighter text-[#3C1E1E]" id="total-score">0</div>
-        <div class="mt-4 inline-block bg-white/40 px-4 py-1 rounded-full text-[10px] font-black">
-            LEVEL UP PROGRESS
+    <div class="boss-board">
+        <div class="text-[#3c1e1e] opacity-60 text-xs font-black tracking-widest mb-1" id="score-title">累積分數</div>
+        <div class="text-6xl font-black tracking-tighter text-[#3c1e1e]" id="total-score">0</div>
+        <div class="mt-4 inline-block bg-white/50 px-5 py-1 rounded-full text-[10px] font-black uppercase">
+            🏆 Fighting! 🏆
         </div>
     </div>
 
-    <div class="flex gap-4 mb-6">
+    <div class="flex gap-4 mb-8">
         <div class="flex-1">
-            <div class="section-header text-green-600"><span>🌟</span>加分</div>
+            <h3 class="text-center font-black text-green-600 mb-3 text-sm">🌟 加分項目</h3>
             <div id="plus-grid" class="flex flex-col gap-3"></div>
         </div>
         <div class="flex-1">
-            <div class="section-header text-red-400"><span>💪</span>扣分</div>
+            <h3 class="text-center font-black text-red-500 mb-3 text-sm">💪 扣分項目</h3>
             <div id="minus-grid" class="flex flex-col gap-3"></div>
         </div>
     </div>
 
-    <div class="glass-card p-6 border-b-8 border-orange-100">
-        <h3 class="font-black text-center mb-4 flex items-center justify-center gap-2">
-            🎁 獎勵兌換
-        </h3>
-        <div id="reward-stack" class="space-y-3"></div>
+    <div class="px-2 mb-10">
+        <h3 class="font-black text-center mb-4 text-[#3c1e1e]">🎁 獎勵兌換清單</h3>
+        <div id="reward-stack"></div>
     </div>
 
-    <div class="px-4">
-        <h3 class="text-[10px] font-black text-gray-400 mb-2 uppercase tracking-tighter">History Log</h3>
-        <div id="history-list" class="space-y-1 max-h-40 overflow-y-auto"></div>
+    <div class="bg-gray-100/50 rounded-[30px] p-5">
+        <h3 class="text-[10px] font-black text-gray-400 mb-3 uppercase tracking-tighter">Recent Logs</h3>
+        <div id="history-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
     </div>
 </div>
 
 <script>
+// (數據內容保持不變，依照您的圖片資訊規劃)
 const config = {
     wei: {
-        name: "瑋瑋",
-        init: 16900,
+        name: "瑋瑋", init: 16900,
         actions: [
             { t: "良好表現", v: 100 }, { t: "準時收平板", v: 500 }, { t: "小考 > 80", v: 300 },
             { t: "期中末考 > 80", v: 1000 }, { t: "期中末考 70-79", v: 500 },
@@ -117,13 +133,10 @@ const config = {
             { t: "家事沒做", v: -500 }, { t: "無聊講弟弟", v: -500 },
             { t: "跟弟弟吵架", v: -500 }, { t: "吃飯太久", v: -300 }
         ],
-        rewards: [
-            { t: "300元禮物", v: 5000 }, { t: "500元禮物", v: 8000 }, { t: "筆記型電腦", v: 20000 }
-        ]
+        rewards: [{ t: "300元禮物", v: 5000 }, { t: "500元禮物", v: 8000 }, { t: "筆記型電腦", v: 20000 }]
     },
     hao: {
-        name: "豪豪",
-        init: 2150,
+        name: "豪豪", init: 2150,
         actions: [
             { t: "良好表現", v: 100 }, { t: "假日不讓媽氣", v: 500 }, { t: "平日不讓媽氣", v: 250 },
             { t: "按摩10分鐘", v: 100 }, { t: "小考 > 85", v: 300 },
@@ -134,14 +147,13 @@ const config = {
         ],
         rewards: [
             { t: "300元禮物", v: 5000 }, { t: "500元禮物", v: 8000 },
-            { t: "去想去的地方", v: 9000 }, { t: "跟媽咪睡一週", v: 10000 },
-            { t: "智慧手機", v: 20000 }
+            { t: "去想去的地方", v: 9000 }, { t: "跟媽咪睡一週", v: 10000 }, { t: "智慧手機", v: 20000 }
         ]
     }
 };
 
 let currentID = 'wei';
-let state = JSON.parse(localStorage.getItem('kakao_v5_pro')) || {
+let state = JSON.parse(localStorage.getItem('kakao_v6_final')) || {
     wei: { score: config.wei.init, logs: [] },
     hao: { score: config.hao.init, logs: [] }
 };
@@ -184,7 +196,7 @@ function addLog(msg, val) {
 }
 
 function save() {
-    localStorage.setItem('kakao_v5_pro', JSON.stringify(state));
+    localStorage.setItem('kakao_v6_final', JSON.stringify(state));
     render();
 }
 
@@ -193,42 +205,38 @@ function render() {
     const conf = config[currentID];
     
     document.getElementById('total-score').innerText = data.score.toLocaleString();
-    document.getElementById('child-label').innerText = `${conf.name} 的累積分數`;
+    document.getElementById('score-title').innerText = `${conf.name} 的累積分數`;
 
-    const plusGrid = document.getElementById('plus-grid');
-    plusGrid.innerHTML = conf.actions.filter(a => a.v > 0).map(a => `
+    document.getElementById('plus-grid').innerHTML = conf.actions.filter(a => a.v > 0).map(a => `
         <button onclick="addPoint('${a.t}', ${a.v})" class="btn-plus">
-            <span class="text-[11px] font-bold opacity-70">${a.t}</span>
-            <span class="text-base font-black">+${a.v}</span>
+            <span class="text-[10px] opacity-60">${a.t}</span>
+            <span class="text-lg font-black">+${a.v}</span>
         </button>
     `).join('');
 
-    const minusGrid = document.getElementById('minus-grid');
-    minusGrid.innerHTML = conf.actions.filter(a => a.v < 0).map(a => `
+    document.getElementById('minus-grid').innerHTML = conf.actions.filter(a => a.v < 0).map(a => `
         <button onclick="addPoint('${a.t}', ${a.v})" class="btn-minus">
-            <span class="text-[11px] font-bold opacity-70">${a.t}</span>
-            <span class="text-base font-black">${a.v}</span>
+            <span class="text-[10px] opacity-60">${a.t}</span>
+            <span class="text-lg font-black">${a.v}</span>
         </button>
     `).join('');
 
-    const stack = document.getElementById('reward-stack');
-    stack.innerHTML = conf.rewards.map(r => {
+    document.getElementById('reward-stack').innerHTML = conf.rewards.map(r => {
         const canBuy = data.score >= r.v;
         return `
-            <div class="flex justify-between items-center p-4 rounded-[25px] ${canBuy ? 'bg-orange-50 border-2 border-orange-200' : 'bg-gray-50 opacity-50'}">
-                <div class="pl-2">
-                    <div class="text-sm font-black text-[#3C1E1E]">${r.t}</div>
+            <div class="reward-card ${canBuy ? 'can-redeem' : ''}">
+                <div>
+                    <div class="text-sm font-black text-[#3c1e1e]">${r.t}</div>
                     <div class="text-[10px] text-gray-400 font-bold">${r.v.toLocaleString()} pt</div>
                 </div>
-                ${canBuy ? `<button onclick="exchange('${r.t}', ${r.v})" class="bg-orange-400 text-white px-5 py-2 rounded-full text-xs font-black shadow-md active:scale-95">兌換</button>` : `<div class="text-[10px] pr-2 text-gray-400">差 ${r.v - data.score}</div>`}
+                ${canBuy ? `<button onclick="exchange('${r.t}', ${r.v})" class="bg-orange-400 text-white px-5 py-2 rounded-full text-xs font-black shadow-md active:scale-95">兌換</button>` : `<div class="text-[10px] text-gray-300">差 ${r.v - data.score}</div>`}
             </div>
         `;
     }).join('');
 
-    const list = document.getElementById('history-list');
-    list.innerHTML = data.logs.map(l => `
-        <div class="flex justify-between items-center py-2 border-b border-gray-200/50">
-            <span class="text-[10px] text-gray-400 font-mono">${l.time}</span>
+    document.getElementById('history-list').innerHTML = data.logs.map(l => `
+        <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+            <span class="text-[10px] text-gray-300 font-mono">${l.time}</span>
             <span class="text-[11px] font-bold text-gray-600">${l.msg}</span>
             <span class="text-[11px] font-black ${l.val > 0 ? 'text-green-500' : 'text-red-400'}">${l.val > 0 ? '+' : ''}${l.val}</span>
         </div>

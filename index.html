@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kakao Rewards App</title>
+    <title>Kakao Kids Rewards</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap');
@@ -17,73 +17,91 @@
 
         body { 
             font-family: 'Noto Sans TC', sans-serif; 
-            background-color: #F7F8FA; /* 改為淺灰色底，保護眼睛 */
+            background-color: #F0F2F5; 
             color: var(--kakao-brown);
         }
         
-        /* 切換標籤樣式 */
-        .tab-btn { @apply flex-1 py-4 text-lg font-black transition-all duration-300 rounded-2xl mx-1 border-b-4 border-transparent; }
-        .tab-active-wei { background-color: var(--ryan-blue); color: white; border-color: #4A90E2; transform: translateY(-3px); }
-        .tab-active-hao { background-color: var(--apeach-pink); color: white; border-color: #FF8296; transform: translateY(-3px); }
-        .tab-inactive { background-color: white; color: #BBB; }
+        /* 角色切換按鈕置中且放大 */
+        .tab-container { @apply flex justify-center gap-8 mb-8 mt-4; }
+        .tab-btn { 
+            @apply flex flex-col items-center justify-center transition-all duration-300;
+            width: 100px;
+        }
+        .avatar-circle {
+            @apply w-20 h-20 rounded-full flex items-center justify-center text-4xl shadow-md border-4 border-white mb-2 transition-all;
+        }
+        .tab-active { transform: translateY(-10px) scale(1.1); }
+        .tab-active .avatar-circle { @apply shadow-xl; }
+        .tab-active span { @apply font-black text-lg opacity-100; }
+        .tab-inactive { @apply opacity-40 grayscale-[0.5] scale-90; }
+        .tab-inactive span { @apply font-bold text-sm opacity-60; }
 
-        /* 卡片與按鈕 */
-        .glass-card { @apply bg-white rounded-[28px] shadow-sm mb-4 border border-gray-100 overflow-hidden; }
-        
+        /* 極致圓潤的分數看板 */
+        .score-display {
+            background: linear-gradient(145deg, #FEE500 0%, #FFD200 100%);
+            @apply py-10 px-6 text-center rounded-[50px] mb-8 shadow-lg relative mx-2;
+            border: 6px solid white;
+        }
+
+        /* 按鈕樣式 */
+        .glass-card { @apply bg-white rounded-[35px] shadow-sm mb-6 border border-gray-100 overflow-hidden; }
         .btn-plus { 
-            @apply bg-white border-2 border-green-100 text-green-600 rounded-2xl p-3 shadow-sm active:scale-95 active:bg-green-50 transition-all flex flex-col items-center justify-center gap-1;
+            @apply bg-[#F0FFF4] border-2 border-green-200 text-green-700 rounded-2xl p-4 shadow-sm active:scale-90 transition-all flex flex-col items-center;
         }
         .btn-minus { 
-            @apply bg-white border-2 border-red-100 text-red-500 rounded-2xl p-3 shadow-sm active:scale-95 active:bg-red-50 transition-all flex flex-col items-center justify-center gap-1;
+            @apply bg-[#FFF5F5] border-2 border-red-100 text-red-500 rounded-2xl p-4 shadow-sm active:scale-90 transition-all flex flex-col items-center;
         }
-
-        .score-display {
-            background: linear-gradient(135deg, var(--kakao-yellow) 0%, #FFD200 100%);
-            @apply py-8 px-6 text-center rounded-[32px] mb-6 shadow-md relative;
-        }
-
-        .section-title { @apply text-xs font-black mb-3 px-2 flex items-center gap-2 text-gray-400 uppercase tracking-widest; }
+        
+        .section-header { @apply flex items-center justify-center gap-2 mb-4 font-black text-sm; }
     </style>
 </head>
-<body class="p-4 pb-12">
+<body class="p-4 pb-20">
 
 <div id="app" class="max-w-md mx-auto">
     <audio id="snd-plus" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
     <audio id="snd-minus" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
     <audio id="snd-exchange" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
-    <div class="flex mb-6 bg-gray-200/50 p-2 rounded-[24px]">
-        <button onclick="switchChild('wei')" id="tab-wei" class="tab-btn tab-inactive">🦁 瑋瑋</button>
-        <button onclick="switchChild('hao')" id="tab-hao" class="tab-btn tab-inactive">🍑 豪豪</button>
+    <div class="tab-container">
+        <div onclick="switchChild('wei')" id="tab-wei" class="tab-btn">
+            <div class="avatar-circle bg-[#6DB3FC]">🦁</div>
+            <span class="text-[#3C1E1E]">瑋瑋</span>
+        </div>
+        <div onclick="switchChild('hao')" id="tab-hao" class="tab-btn">
+            <div class="avatar-circle bg-[#FFB6C1]">🍑</div>
+            <span class="text-[#3C1E1E]">豪豪</span>
+        </div>
     </div>
 
     <div class="score-display">
-        <div class="text-[var(--kakao-brown)] opacity-60 text-sm font-bold mb-1" id="child-label">CURRENT POINTS</div>
-        <div class="text-6xl font-black tracking-tighter" id="total-score">0</div>
-        <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-white px-4 py-1 rounded-full shadow-sm text-[10px] font-bold">
-            ✨ 已同步儲存
+        <div class="text-[#3C1E1E] opacity-50 text-xs font-black tracking-widest mb-2" id="child-label">WEI'S TOTAL SCORE</div>
+        <div class="text-6xl font-black tracking-tighter text-[#3C1E1E]" id="total-score">0</div>
+        <div class="mt-4 inline-block bg-white/40 px-4 py-1 rounded-full text-[10px] font-black">
+            LEVEL UP PROGRESS
         </div>
     </div>
 
     <div class="flex gap-4 mb-6">
         <div class="flex-1">
-            <h3 class="section-title text-green-500"><span>✅</span> 加分</h3>
-            <div id="plus-grid" class="grid grid-cols-1 gap-3"></div>
+            <div class="section-header text-green-600"><span>🌟</span>加分</div>
+            <div id="plus-grid" class="flex flex-col gap-3"></div>
         </div>
         <div class="flex-1">
-            <h3 class="section-title text-red-400"><span>❌</span> 扣分</h3>
-            <div id="minus-grid" class="grid grid-cols-1 gap-3"></div>
+            <div class="section-header text-red-400"><span>💪</span>扣分</div>
+            <div id="minus-grid" class="flex flex-col gap-3"></div>
         </div>
     </div>
 
-    <div class="glass-card p-5">
-        <h3 class="section-title text-orange-400"><span>🎁</span> 獎勵兌換清單</h3>
+    <div class="glass-card p-6 border-b-8 border-orange-100">
+        <h3 class="font-black text-center mb-4 flex items-center justify-center gap-2">
+            🎁 獎勵兌換
+        </h3>
         <div id="reward-stack" class="space-y-3"></div>
     </div>
 
-    <div class="glass-card p-5 bg-gray-50/50">
-        <h3 class="section-title"><span>🕒</span> 最近紀錄</h3>
-        <div id="history-list" class="space-y-2 max-h-40 overflow-y-auto text-[11px]"></div>
+    <div class="px-4">
+        <h3 class="text-[10px] font-black text-gray-400 mb-2 uppercase tracking-tighter">History Log</h3>
+        <div id="history-list" class="space-y-1 max-h-40 overflow-y-auto"></div>
     </div>
 </div>
 
@@ -123,7 +141,7 @@ const config = {
 };
 
 let currentID = 'wei';
-let state = JSON.parse(localStorage.getItem('kakao_v4_clear')) || {
+let state = JSON.parse(localStorage.getItem('kakao_v5_pro')) || {
     wei: { score: config.wei.init, logs: [] },
     hao: { score: config.hao.init, logs: [] }
 };
@@ -131,17 +149,13 @@ let state = JSON.parse(localStorage.getItem('kakao_v4_clear')) || {
 function playSound(type) {
     const audio = document.getElementById('snd-' + type);
     audio.currentTime = 0;
-    audio.play().catch(e => console.log("Audio play deferred"));
+    audio.play().catch(e => {});
 }
 
 function switchChild(id) {
     currentID = id;
-    const btnWei = document.getElementById('tab-wei');
-    const btnHao = document.getElementById('tab-hao');
-    
-    btnWei.className = id === 'wei' ? 'tab-btn tab-active-wei' : 'tab-btn tab-inactive';
-    btnHao.className = id === 'hao' ? 'tab-btn tab-active-hao' : 'tab-btn tab-inactive';
-    
+    document.getElementById('tab-wei').className = id === 'wei' ? 'tab-btn tab-active' : 'tab-btn tab-inactive';
+    document.getElementById('tab-hao').className = id === 'hao' ? 'tab-btn tab-active' : 'tab-btn tab-inactive';
     render();
 }
 
@@ -154,7 +168,7 @@ function addPoint(title, value) {
 
 function exchange(title, cost) {
     if (state[currentID].score < cost) return;
-    if (confirm(`確認要兌換「${title}」嗎？`)) {
+    if (confirm(`🦁 確認要兌換「${title}」並扣分嗎？`)) {
         state[currentID].score -= cost;
         playSound('exchange');
         addLog(`🎁 兌換:${title}`, -cost);
@@ -166,11 +180,11 @@ function addLog(msg, val) {
     const now = new Date();
     const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
     state[currentID].logs.unshift({ time: timeStr, msg: msg, val: val });
-    if (state[currentID].logs.length > 30) state[currentID].logs.pop();
+    if (state[currentID].logs.length > 20) state[currentID].logs.pop();
 }
 
 function save() {
-    localStorage.setItem('kakao_v4_clear', JSON.stringify(state));
+    localStorage.setItem('kakao_v5_pro', JSON.stringify(state));
     render();
 }
 
@@ -179,21 +193,21 @@ function render() {
     const conf = config[currentID];
     
     document.getElementById('total-score').innerText = data.score.toLocaleString();
-    document.getElementById('child-label').innerText = `${conf.name} 的餘額`;
+    document.getElementById('child-label').innerText = `${conf.name} 的累積分數`;
 
     const plusGrid = document.getElementById('plus-grid');
     plusGrid.innerHTML = conf.actions.filter(a => a.v > 0).map(a => `
         <button onclick="addPoint('${a.t}', ${a.v})" class="btn-plus">
-            <span class="text-xs font-bold">${a.t}</span>
-            <span class="text-sm font-black">+${a.v}</span>
+            <span class="text-[11px] font-bold opacity-70">${a.t}</span>
+            <span class="text-base font-black">+${a.v}</span>
         </button>
     `).join('');
 
     const minusGrid = document.getElementById('minus-grid');
     minusGrid.innerHTML = conf.actions.filter(a => a.v < 0).map(a => `
         <button onclick="addPoint('${a.t}', ${a.v})" class="btn-minus">
-            <span class="text-xs font-bold">${a.t}</span>
-            <span class="text-sm font-black">${a.v}</span>
+            <span class="text-[11px] font-bold opacity-70">${a.t}</span>
+            <span class="text-base font-black">${a.v}</span>
         </button>
     `).join('');
 
@@ -201,27 +215,26 @@ function render() {
     stack.innerHTML = conf.rewards.map(r => {
         const canBuy = data.score >= r.v;
         return `
-            <div class="flex justify-between items-center p-4 rounded-2xl ${canBuy ? 'bg-orange-50 border border-orange-200' : 'bg-gray-50 opacity-40'} transition-all">
-                <div>
-                    <div class="text-sm font-black">${r.t}</div>
-                    <div class="text-[10px] text-gray-400 font-bold">${r.v.toLocaleString()} 分可兌換</div>
+            <div class="flex justify-between items-center p-4 rounded-[25px] ${canBuy ? 'bg-orange-50 border-2 border-orange-200' : 'bg-gray-50 opacity-50'}">
+                <div class="pl-2">
+                    <div class="text-sm font-black text-[#3C1E1E]">${r.t}</div>
+                    <div class="text-[10px] text-gray-400 font-bold">${r.v.toLocaleString()} pt</div>
                 </div>
-                ${canBuy ? `<button onclick="exchange('${r.t}', ${r.v})" class="bg-orange-400 text-white px-4 py-1 rounded-full text-xs font-black shadow-sm active:scale-90 transition-all">兌換</button>` : `<div class="text-[10px] text-gray-400">差 ${r.v - data.score}</div>`}
+                ${canBuy ? `<button onclick="exchange('${r.t}', ${r.v})" class="bg-orange-400 text-white px-5 py-2 rounded-full text-xs font-black shadow-md active:scale-95">兌換</button>` : `<div class="text-[10px] pr-2 text-gray-400">差 ${r.v - data.score}</div>`}
             </div>
         `;
     }).join('');
 
     const list = document.getElementById('history-list');
     list.innerHTML = data.logs.map(l => `
-        <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
-            <span class="text-gray-400 font-mono">${l.time}</span>
-            <span class="font-bold text-gray-600">${l.msg}</span>
-            <span class="font-black ${l.val > 0 ? 'text-green-500' : 'text-red-400'}">${l.val > 0 ? '+' : ''}${l.val}</span>
+        <div class="flex justify-between items-center py-2 border-b border-gray-200/50">
+            <span class="text-[10px] text-gray-400 font-mono">${l.time}</span>
+            <span class="text-[11px] font-bold text-gray-600">${l.msg}</span>
+            <span class="text-[11px] font-black ${l.val > 0 ? 'text-green-500' : 'text-red-400'}">${l.val > 0 ? '+' : ''}${l.val}</span>
         </div>
     `).join('');
 }
 
-// 初始進入
 switchChild('wei');
 </script>
 </body>

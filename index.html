@@ -2,52 +2,68 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kakao Kids Rewards</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>家中小管家 - 獎勵系統</title>
+    
+    <!-- 防止加入主畫面後出現白屏的關鍵標籤 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap');
         
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F8F9FA; color: #3C1E1E; }
+        body { 
+            font-family: 'Noto Sans TC', sans-serif; 
+            background-color: #F8F9FA; 
+            color: #3C1E1E; 
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
 
-        /* 置中角色切換器 - 確保水平置中且分開 */
+        /* 頂部角色選單：置中且分開 */
         .tab-container { 
-            display: flex; justify-content: center; gap: 40px; 
+            display: flex; justify-content: center; gap: 45px; 
             margin: 30px 0; width: 100%;
         }
-        .tab-btn { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: all 0.3s; width: 100px; }
+        .tab-btn { 
+            display: flex; flex-direction: column; align-items: center; 
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            width: 90px;
+        }
         
-        /* 頭像樣式：如果圖片失效會顯示萊恩藍/屁桃粉背景 */
+        /* 頭像樣式：帶有角色底色與圖片 */
         .avatar {
-            width: 85px; height: 85px; border-radius: 50%; border: 4px solid white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 8px;
+            width: 80px; height: 80px; border-radius: 50%; border: 4px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 8px;
             background-size: cover; background-position: center; background-repeat: no-repeat;
         }
-        .ryan-img { background-color: #6DB3FC; background-image: url('https://www.kakaofriends.com/static/media/ryan.8a8a9a4b.png'); }
-        .apeach-img { background-color: #FFB6C1; background-image: url('https://www.kakaofriends.com/static/media/apeach.013a7c6a.png'); }
+        .ryan-img { background-color: #6DB3FC; background-image: url('https://i.imgur.com/8N4N3u8.png'); }
+        .apeach-img { background-color: #FFB6C1; background-image: url('https://i.imgur.com/uI6O4G8.png'); }
 
-        .tab-active { transform: translateY(-10px) scale(1.1); }
-        .tab-active span { font-weight: 900; color: #3C1E1E; }
-        .tab-inactive { opacity: 0.4; filter: grayscale(0.2); }
+        .tab-active { transform: translateY(-10px) scale(1.1); opacity: 1; }
+        .tab-active span { font-weight: 900; color: #3C1E1E; font-size: 1rem; }
+        .tab-inactive { opacity: 0.4; filter: grayscale(0.2); transform: scale(0.9); }
 
-        /* 黃色積分看板：縮小一點、內容全部置中、增加下方邊距 */
+        /* 黃色積分看板：內容全置中、寬度縮小、下方增加間距 */
         .boss-board {
             background: linear-gradient(135deg, #FEE500 0%, #FFD200 100%);
             border-radius: 50px; border: 6px solid white;
-            box-shadow: 0 10px 20px rgba(254, 229, 0, 0.25);
-            width: 90%; margin: 0 auto 50px auto; /* 寬度縮小，置中排列，下方留白增加到 50px */
-            @apply py-8 px-6 text-center; 
+            box-shadow: 0 12px 24px rgba(254, 229, 0, 0.3);
+            width: 88%; margin: 0 auto 55px auto; /* 寬度縮小且置中，下方留白 55px */
+            padding: 30px 20px; text-align: center;
         }
 
-        /* 加減分項目樣式 */
-        .btn-action { @apply text-base font-black active:scale-95 transition-all py-2; cursor: pointer; }
+        /* 加減分行為按鈕 */
+        .btn-action { @apply text-base font-black active:scale-95 transition-all py-2 cursor-pointer text-center; }
 
-        /* 獎勵兌換卡片樣式 (保持原本樣式) */
+        /* 獎勵兌換卡片 (還原樣式) */
         .reward-item {
             background-color: #FFF9F2; border: 2px solid #FEEBC8; border-radius: 30px;
             padding: 16px 20px; margin-bottom: 12px;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
         }
         .btn-exchange {
             background-color: #ED8936; color: white; padding: 8px 24px;
@@ -55,18 +71,22 @@
             box-shadow: 0 4px 0 #C05621; transition: all 0.1s;
         }
         .btn-exchange:active { transform: translateY(2px); box-shadow: 0 2px 0 #C05621; }
-        .btn-locked { background-color: #CBD5E0; box-shadow: 0 4px 0 #A0AEC0; cursor: not-allowed; }
+        .btn-locked { background-color: #CBD5E0; box-shadow: 0 4px 0 #A0AEC0; cursor: not-allowed; opacity: 0.7; }
+
+        /* 初始載入動畫，避免白屏感 */
+        #app { opacity: 0; transition: opacity 0.5s ease; }
+        .loaded #app { opacity: 1; }
     </style>
 </head>
 <body class="p-4 pb-20">
 
 <div id="app" class="max-w-md mx-auto">
-    <!-- 音效 -->
-    <audio id="snd-plus" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
-    <audio id="snd-minus" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
-    <audio id="snd-exchange" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+    <!-- 音效庫連結 -->
+    <audio id="snd-plus" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3" preload="auto"></audio>
+    <audio id="snd-minus" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3" preload="auto"></audio>
+    <audio id="snd-exchange" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3" preload="auto"></audio>
 
-    <!-- 頂部頭像切換 -->
+    <!-- 頂部頭像切換區 -->
     <div class="tab-container">
         <div onclick="switchChild('wei')" id="tab-wei" class="tab-btn">
             <div class="avatar ryan-img"></div>
@@ -78,39 +98,39 @@
         </div>
     </div>
 
-    <!-- 黃色積分看板 (全部內容置中) -->
+    <!-- 累積分數看板 (內容全置中) -->
     <div class="boss-board">
-        <div class="text-[#3C1E1E] opacity-50 text-xs font-black tracking-widest mb-1 text-center" id="score-title">累積分數</div>
-        <div class="text-6xl font-black tracking-tighter text-center" id="total-score">0</div>
+        <div class="text-[#3C1E1E] opacity-50 text-xs font-black tracking-widest mb-1" id="score-title">瑋瑋 的累積分數</div>
+        <div class="text-6xl font-black tracking-tighter" id="total-score">0</div>
         <div class="flex justify-center mt-4">
-            <div class="bg-white/40 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-center">
+            <div class="bg-white/40 px-5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
                 Level Up Progress
             </div>
         </div>
     </div>
 
-    <!-- 加減分操作區 -->
+    <!-- 加減分操作 -->
     <div class="flex gap-4 mb-10">
-        <div class="flex-1 text-center border-r border-gray-100">
-            <h3 class="text-xs font-black text-green-600 mb-4 tracking-widest">✨ 加分項目</h3>
+        <div class="flex-1 border-r border-gray-100">
+            <h3 class="text-xs font-black text-green-600 mb-5 tracking-widest uppercase text-center">✨ 加分項目</h3>
             <div id="plus-grid" class="flex flex-col gap-2"></div>
         </div>
-        <div class="flex-1 text-center">
-            <h3 class="text-xs font-black text-red-500 mb-4 tracking-widest">💪 扣分項目</h3>
+        <div class="flex-1">
+            <h3 class="text-xs font-black text-red-500 mb-5 tracking-widest uppercase text-center">💪 扣分項目</h3>
             <div id="minus-grid" class="flex flex-col gap-2"></div>
         </div>
     </div>
 
-    <!-- 獎勵兌換區 (保持圓潤長條樣式) -->
+    <!-- 獎勵區 -->
     <div class="px-2 mb-10">
-        <h3 class="font-black text-center mb-5 text-[#3C1E1E] flex items-center justify-center gap-2">
+        <h3 class="font-black text-center mb-6 text-[#3C1E1E] flex items-center justify-center gap-2">
             🎁 獎勵兌換
         </h3>
         <div id="reward-stack"></div>
     </div>
 
     <!-- 歷史紀錄 -->
-    <div class="bg-gray-100/60 rounded-[30px] p-5">
+    <div class="bg-gray-100/60 rounded-[35px] p-6">
         <h3 class="text-[10px] font-black text-gray-400 mb-3 uppercase tracking-tighter text-center">History Log</h3>
         <div id="history-list" class="space-y-2 max-h-40 overflow-y-auto text-xs"></div>
     </div>
@@ -147,15 +167,15 @@ const config = {
 };
 
 let currentID = 'wei';
-let state = JSON.parse(localStorage.getItem('kakao_v10_final')) || {
+// 存儲鍵名更新以避免舊數據干擾
+let state = JSON.parse(localStorage.getItem('kakao_v12_final_v2')) || {
     wei: { score: config.wei.init, logs: [] },
     hao: { score: config.hao.init, logs: [] }
 };
 
 function playSound(type) {
     const audio = document.getElementById('snd-' + type);
-    audio.currentTime = 0;
-    audio.play().catch(e => {});
+    if (audio) { audio.currentTime = 0; audio.play().catch(e => {}); }
 }
 
 function switchChild(id) {
@@ -174,7 +194,7 @@ function addPoint(title, value) {
 
 function exchange(title, cost) {
     if (state[currentID].score < cost) return;
-    if (confirm(`確認要兌換「${title}」嗎？`)) {
+    if (confirm(`🦁 確認要兌換「${title}」並扣分嗎？`)) {
         state[currentID].score -= cost;
         playSound('exchange');
         addLog(`🎁 兌換:${title}`, -cost);
@@ -190,7 +210,7 @@ function addLog(msg, val) {
 }
 
 function save() {
-    localStorage.setItem('kakao_v10_final', JSON.stringify(state));
+    localStorage.setItem('kakao_v12_final_v2', JSON.stringify(state));
     render();
 }
 
@@ -202,14 +222,14 @@ function render() {
 
     document.getElementById('plus-grid').innerHTML = conf.actions.filter(a => a.v > 0).map(a => `
         <div onclick="addPoint('${a.t}', ${a.v})" class="btn-action text-green-700">
-            <span class="font-bold text-xs mr-1 text-center block">${a.t}</span>
+            <span class="font-bold text-[11px] block text-center">${a.t}</span>
             <span class="font-black block text-center">+${a.v}</span>
         </div>
     `).join('');
 
     document.getElementById('minus-grid').innerHTML = conf.actions.filter(a => a.v < 0).map(a => `
         <div onclick="addPoint('${a.t}', ${a.v})" class="btn-action text-red-500">
-            <span class="font-bold text-xs mr-1 text-center block">${a.t}</span>
+            <span class="font-bold text-[11px] block text-center">${a.t}</span>
             <span class="font-black block text-center">${a.v}</span>
         </div>
     `).join('');
@@ -218,7 +238,7 @@ function render() {
         const canBuy = data.score >= r.v;
         return `
             <div class="reward-item">
-                <div class="flex flex-col">
+                <div class="flex flex-col text-left">
                     <span class="font-black text-sm text-[#3C1E1E]">${r.t}</span>
                     <span class="text-[10px] font-bold text-gray-400">${r.v.toLocaleString()} pt</span>
                 </div>
@@ -237,7 +257,12 @@ function render() {
         </div>
     `).join('');
 }
-switchChild('wei');
+
+// 確保網頁載入後才啟動
+window.onload = function() {
+    document.body.classList.add('loaded');
+    switchChild('wei');
+};
 </script>
 </body>
 </html>

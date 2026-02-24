@@ -3,65 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kakao Rewards V7</title>
+    <title>Kakao Rewards Final</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap');
-        
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F7F8FA; color: #3C1E1E; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F8F9FA; color: #3C1E1E; }
 
         /* 置中角色切換器 */
         .tab-container { 
-            display: flex;
-            justify-content: center;
-            gap: 30px; 
-            margin: 25px 0;
-            width: 100%;
+            display: flex; justify-content: center; gap: 40px; 
+            margin: 30px 0; width: 100%;
         }
-
-        .tab-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            width: 90px;
-        }
-
+        .tab-btn { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: all 0.3s; width: 100px; }
         .avatar {
-            width: 75px;
-            height: 75px;
-            border-radius: 50%;
-            border: 4px solid white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            margin-bottom: 8px;
-            background-size: cover;
-            background-position: center;
+            width: 85px; height: 85px; border-radius: 50%; border: 4px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 8px;
+            background-size: cover; background-position: center;
         }
 
-        /* 萊恩與屁桃頭像圖片 */
-        .ryan-img { background-color: #6DB3FC; background-image: url('https://i.pinimg.com/564x/a4/0a/63/a40a631627993074092490b435a63162.jpg'); }
-        .apeach-img { background-color: #FFB6C1; background-image: url('https://i.pinimg.com/564x/6a/63/9e/6a639e38f972412803b98e1e1e919191.jpg'); }
+        /* 正確的萊恩與屁桃頭像 */
+        .ryan-img { background-image: url('https://i.imgur.com/8N4N3u8.png'); background-color: #6DB3FC; }
+        .apeach-img { background-image: url('https://i.imgur.com/uI6O4G8.png'); background-color: #FFB6C1; }
 
-        .tab-active { transform: translateY(-8px) scale(1.1); }
-        .tab-active span { font-weight: 900; opacity: 1; }
-        .tab-inactive { opacity: 0.4; filter: grayscale(0.3); }
+        .tab-active { transform: translateY(-10px) scale(1.1); }
+        .tab-active span { font-weight: 900; color: #3C1E1E; }
+        .tab-inactive { opacity: 0.4; filter: grayscale(0.2); }
 
-        /* 圓潤分數看板 */
-        .score-display {
+        /* 圓潤積分看板 */
+        .boss-board {
             background: linear-gradient(135deg, #FEE500 0%, #FFD200 100%);
-            @apply py-8 px-6 text-center rounded-[40px] mb-6 shadow-md relative mx-2;
-            border: 5px solid white;
+            border-radius: 50px; border: 6px solid white;
+            box-shadow: 0 10px 20px rgba(254, 229, 0, 0.3);
+            @apply py-10 px-6 text-center mx-2 mb-12; /* 增加 mb-12 拉開下方距離 */
         }
 
-        .btn-plus { @apply bg-white border-2 border-green-100 text-green-600 rounded-2xl p-3 shadow-sm active:scale-95 transition-all flex flex-col items-center gap-1; }
-        .btn-minus { @apply bg-white border-2 border-red-100 text-red-500 rounded-2xl p-3 shadow-sm active:scale-95 transition-all flex flex-col items-center gap-1; }
+        /* 獎勵兌換卡片樣式 (還原圖二) */
+        .reward-item {
+            background-color: #FFF9F2;
+            border: 2px solid #FEEBC8;
+            border-radius: 30px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .btn-exchange {
+            background-color: #ED8936;
+            color: white;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 14px;
+            box-shadow: 0 4px 0 #C05621;
+            transition: all 0.1s;
+        }
+        .btn-exchange:active { transform: translateY(2px); box-shadow: 0 2px 0 #C05621; }
+        .btn-locked { background-color: #CBD5E0; box-shadow: 0 4px 0 #A0AEC0; cursor: not-allowed; }
 
-        .reward-card { @apply bg-white rounded-2xl p-4 border border-gray-100 mb-3 flex justify-between items-center shadow-sm transition-all; }
-        .can-redeem { @apply border-orange-200 bg-orange-50; }
+        .btn-action { @apply text-base font-black active:scale-95 transition-all py-2; }
     </style>
 </head>
-<body class="p-4 pb-12">
+<body class="p-4 pb-20">
 
 <div id="app" class="max-w-md mx-auto">
     <audio id="snd-plus" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
@@ -71,43 +75,43 @@
     <div class="tab-container">
         <div onclick="switchChild('wei')" id="tab-wei" class="tab-btn">
             <div class="avatar ryan-img"></div>
-            <span class="text-sm">瑋瑋</span>
+            <span>瑋瑋</span>
         </div>
         <div onclick="switchChild('hao')" id="tab-hao" class="tab-btn">
             <div class="avatar apeach-img"></div>
-            <span class="text-sm">豪豪</span>
+            <span>豪豪</span>
         </div>
     </div>
 
-    <div class="score-display">
-        <div class="opacity-60 text-xs font-bold mb-1" id="child-label">累積分數</div>
+    <div class="boss-board">
+        <div class="text-[#3C1E1E] opacity-50 text-xs font-black tracking-widest mb-1" id="score-title">累積分數</div>
         <div class="text-6xl font-black tracking-tighter" id="total-score">0</div>
-        <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-white px-4 py-1 rounded-full shadow-sm text-[10px] font-bold">
-            LEVEL UP PROGRESS
+        <div class="mt-4 inline-block bg-white/40 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+            Level Up Progress
         </div>
     </div>
 
-    <div class="flex gap-4 mb-6">
+    <div class="flex gap-4 mb-10">
         <div class="flex-1 text-center">
-            <h3 class="text-xs font-black text-green-500 mb-3 tracking-widest uppercase">✨ 加分項目</h3>
-            <div id="plus-grid" class="flex flex-col gap-3"></div>
+            <h3 class="text-xs font-black text-green-600 mb-4 tracking-widest">✨ 加分項目</h3>
+            <div id="plus-grid" class="flex flex-col gap-2"></div>
         </div>
         <div class="flex-1 text-center">
-            <h3 class="text-xs font-black text-red-400 mb-3 tracking-widest uppercase">💪 扣分項目</h3>
-            <div id="minus-grid" class="flex flex-col gap-3"></div>
+            <h3 class="text-xs font-black text-red-500 mb-4 tracking-widest">💪 扣分項目</h3>
+            <div id="minus-grid" class="flex flex-col gap-2"></div>
         </div>
     </div>
 
-    <div class="px-2 mb-8">
-        <h3 class="text-sm font-black text-center mb-4 flex items-center justify-center gap-2">
+    <div class="px-2 mb-10">
+        <h3 class="font-black text-center mb-5 text-[#3C1E1E] flex items-center justify-center gap-2">
             🎁 獎勵兌換
         </h3>
         <div id="reward-stack"></div>
     </div>
 
-    <div class="bg-gray-100/50 rounded-3xl p-4 text-[11px]">
-        <h3 class="font-black text-gray-400 mb-2 uppercase tracking-widest">Recent Logs</h3>
-        <div id="history-list" class="space-y-1 max-h-40 overflow-y-auto"></div>
+    <div class="bg-gray-100/80 rounded-[30px] p-5">
+        <h3 class="text-[10px] font-black text-gray-400 mb-3 uppercase tracking-tighter">History Log</h3>
+        <div id="history-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
     </div>
 </div>
 
@@ -142,7 +146,7 @@ const config = {
 };
 
 let currentID = 'wei';
-let state = JSON.parse(localStorage.getItem('kakao_v7_data')) || {
+let state = JSON.parse(localStorage.getItem('kakao_v8_final')) || {
     wei: { score: config.wei.init, logs: [] },
     hao: { score: config.hao.init, logs: [] }
 };
@@ -169,7 +173,7 @@ function addPoint(title, value) {
 
 function exchange(title, cost) {
     if (state[currentID].score < cost) return;
-    if (confirm(`🦁 確認要兌換「${title}」嗎？`)) {
+    if (confirm(`確認要兌換「${title}」嗎？`)) {
         state[currentID].score -= cost;
         playSound('exchange');
         addLog(`🎁 兌換:${title}`, -cost);
@@ -185,7 +189,7 @@ function addLog(msg, val) {
 }
 
 function save() {
-    localStorage.setItem('kakao_v7_data', JSON.stringify(state));
+    localStorage.setItem('kakao_v8_final', JSON.stringify(state));
     render();
 }
 
@@ -193,40 +197,42 @@ function render() {
     const data = state[currentID];
     const conf = config[currentID];
     document.getElementById('total-score').innerText = data.score.toLocaleString();
-    document.getElementById('child-label').innerText = `${conf.name} 的累積分數`;
+    document.getElementById('score-title').innerText = `${conf.name} 的累積分數`;
 
     document.getElementById('plus-grid').innerHTML = conf.actions.filter(a => a.v > 0).map(a => `
-        <button onclick="addPoint('${a.t}', ${a.v})" class="btn-plus">
-            <span class="text-[10px] font-bold">${a.t}</span>
-            <span class="text-sm font-black">+${a.v}</span>
-        </button>
+        <div onclick="addPoint('${a.t}', ${a.v})" class="btn-action text-green-700">
+            <span class="font-bold text-xs mr-1">${a.t}</span>
+            <span class="font-black">+${a.v}</span>
+        </div>
     `).join('');
 
     document.getElementById('minus-grid').innerHTML = conf.actions.filter(a => a.v < 0).map(a => `
-        <button onclick="addPoint('${a.t}', ${a.v})" class="btn-minus">
-            <span class="text-[10px] font-bold">${a.t}</span>
-            <span class="text-sm font-black">${a.v}</span>
-        </button>
+        <div onclick="addPoint('${a.t}', ${a.v})" class="btn-action text-red-500">
+            <span class="font-bold text-xs mr-1">${a.t}</span>
+            <span class="font-black">${a.v}</span>
+        </div>
     `).join('');
 
     document.getElementById('reward-stack').innerHTML = conf.rewards.map(r => {
         const canBuy = data.score >= r.v;
         return `
-            <div class="reward-card ${canBuy ? 'can-redeem' : ''}">
-                <div>
-                    <div class="text-xs font-black text-[#3C1E1E]">${r.t}</div>
-                    <div class="text-[10px] text-gray-400 font-bold">${r.v.toLocaleString()} pt</div>
+            <div class="reward-item">
+                <div class="flex flex-col">
+                    <span class="font-black text-sm">${r.t}</span>
+                    <span class="text-[10px] font-bold text-gray-400">${r.v.toLocaleString()} pt</span>
                 </div>
-                ${canBuy ? `<button onclick="exchange('${r.t}', ${r.v})" class="bg-orange-400 text-white px-4 py-1 rounded-full text-[10px] font-black shadow-sm active:scale-90 transition-all">兌換</button>` : `<div class="text-[10px] text-gray-300">還差 ${r.v - data.score}</div>`}
+                <button onclick="exchange('${r.t}', ${r.v})" class="btn-exchange ${canBuy ? '' : 'btn-locked'}">
+                    兌換
+                </button>
             </div>
         `;
     }).join('');
 
     document.getElementById('history-list').innerHTML = data.logs.map(l => `
-        <div class="flex justify-between items-center py-1.5 border-b border-gray-100 last:border-0">
-            <span class="text-gray-300 font-mono">${l.time}</span>
-            <span class="font-bold text-gray-600">${l.msg}</span>
-            <span class="font-black ${l.val > 0 ? 'text-green-500' : 'text-red-400'}">${l.val > 0 ? '+' : ''}${l.val}</span>
+        <div class="flex justify-between items-center py-2 border-b border-gray-200/50">
+            <span class="text-[10px] text-gray-400 font-mono">${l.time}</span>
+            <span class="text-[11px] font-bold text-gray-600">${l.msg}</span>
+            <span class="text-[11px] font-black ${l.val > 0 ? 'text-green-500' : 'text-red-400'}">${l.val > 0 ? '+' : ''}${l.val}</span>
         </div>
     `).join('');
 }
